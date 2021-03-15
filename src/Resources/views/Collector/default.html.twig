@@ -1,0 +1,120 @@
+{% extends '@WebProfiler/Profiler/layout.html.twig' %}
+
+{% import _self as helper %}
+
+{% block toolbar %}
+    {% set icon %}
+        {{ include('@Istorija/Collector/icon.svg') }}
+        <span class="sf-toolbar-value">Istorija</span>
+    {% endset %}
+
+    {% set text %}
+        <div class="sf-toolbar-info-piece">
+            <b>Command handled</b>
+            <span class="sf-toolbar-status">{{ collector.commandCount }}</span>
+        </div>
+
+        <div class="sf-toolbar-info-piece">
+            <b>Event recorded</b>
+            <span class="sf-toolbar-status">{{ collector.eventCount }}</span>
+        </div>
+    {% endset %}
+
+    {{ include('@WebProfiler/Profiler/toolbar_item.html.twig', { link: true }) }}
+{% endblock %}
+
+{% block menu %}
+    {# This left-hand menu appears when using the full-screen profiler. #}
+    <span class="label">
+        <span class="icon">
+            {{ include('@Istorija/Collector/icon.svg') }}
+        </span>
+        <strong>Istorija</strong>
+        <span class="count">
+            <span>{{ collector.commandCount }} : {{ collector.eventCount }}</span>
+        </span>
+    </span>
+{% endblock %}
+
+{% block panel %}
+    <h2>Istorija</h2>
+
+    <div class="sf-tabs">
+        <div class="tab">
+            <h3 class="tab-title">Command Bus <span class="badge">{{ collector.commandCount }}</span></h3>
+            <p class="text-muted">Command handled during the execution of the application.</p>
+
+            <div class="tab-content">
+                {% if collector.commands is empty %}
+                    <div class="empty">
+                        <p>There are no recorded command.</p>
+                    </div>
+                {% else %}
+                    {{ helper.render_table(collector.commands, 'command') }}
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="tab">
+            {# 'deprecation_logs|length' is not used because deprecations are
+            now grouped and the group count doesn't match the message count #}
+            <h3 class="tab-title">Event Bus <span class="badge">{{ collector.eventCount }}</span></h3>
+            <p class="text-muted">Event recorded during the execution of the application.</p>
+
+            <div class="tab-content">
+                {% if collector.events is empty %}
+                    <div class="empty">
+                        <p>There are no recorded event.</p>
+                    </div>
+                {% else %}
+                    {{ helper.render_table(collector.events, 'event') }}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% macro render_table(messages, category = '') %}
+    {% import _self as helper %}
+
+    <table class="logs">
+        <thead>
+        <tr>
+            <th class="full-width">Message</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        {% for message in messages %}
+            <tr>
+                <td class="font-normal">{{ helper.render_log_message(category, loop.index, message) }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endmacro %}
+
+{% macro render_log_message(category, message_index, message) %}
+
+    {% set has_payload = message.payload is defined and message.payload is not empty %}
+
+    {% if not has_payload %}
+        {{ profiler_dump_log(message.name) }}
+    {% else %}
+        {{ profiler_dump_log(message.name, message.payload) }}
+
+        <div class="text-small font-normal">
+            {% if has_payload %}
+                &nbsp;&nbsp;
+                {% set payload_id = 'payload-' ~ category ~ '-' ~ message_index %}
+                <a class="btn btn-link text-small sf-toggle" data-toggle-selector="#{{ payload_id }}" data-toggle-alt-content="Hide payload">Show payload</a>
+            {% endif %}
+        </div>
+
+        {% if has_payload %}
+            <div id="{{ payload_id }}" class="context sf-toggle-content sf-toggle-hidden">
+                {{ profiler_dump(message.payload, maxDepth=1) }}
+            </div>
+        {% endif %}
+    {% endif %}
+{% endmacro %}

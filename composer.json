@@ -1,0 +1,37 @@
+{
+  "name": "dayuse/istorija-bundle",
+  "description": "Symfony Bundle for dayuse/istorija integration",
+  "license": "proprietary",
+  "authors": [
+    {
+      "name": "Thomas Tourlourat",
+      "email": "thomas@tourlourat.com"
+    }
+  ],
+  "require": {
+    "symfony/framework-bundle": ">=2.1",
+    "symfony/console": ">=2.1",
+    "dayuse/istorija": "1.0.x-dev"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^6.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "Dayuse\\IstorijaBundle\\": "src",
+      "": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Dayseuse\\Tests\\IstorijaBundle\\": "tests/"
+    }
+  },
+  "repositories": [
+    {
+      "type": "vcs",
+      "url":  "git@gitlab.anonymation.com:tbbc/istorija.git",
+      "no-api": true
+    }
+  ]
+}
