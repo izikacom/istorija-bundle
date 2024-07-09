@@ -29,7 +29,7 @@ class IstorijaDataCollector extends BaseDataCollector
         $this->eventBus = $eventBus;
     }
 
-    public function collect(Request $request, Response $response, Exception $exception = null): void
+    public function collect(Request $request, Response $response, ?\Throwable $exception = null): void
     {
         $messageNormalizer = function (Message $message): array {
             return [
