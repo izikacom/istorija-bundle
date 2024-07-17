@@ -5,6 +5,7 @@ namespace Dayuse\IstorijaBundle\DependencyInjection;
 use Dayuse\IstorijaBundle\Command\DebugHandlerCommand;
 use Dayuse\IstorijaBundle\ServiceHandlerRegistry;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 
 /**
@@ -24,6 +25,7 @@ class IstorijaExtension extends Extension
 
         $container->register('istorija.console.debug_handler', DebugHandlerCommand::class)
             ->setPublic(false)
+            ->addArgument(new Reference('istorija.service_handler_registry'))
             ->addTag('console.command', [
                 'command' => 'istorija:debug:handler',
             ]);
